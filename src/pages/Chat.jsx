@@ -1,41 +1,23 @@
 // src/pages/Chat.jsx
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Header from "../components/Header";
 import {
-  FaUser,
-  FaRobot,
   FaPaperPlane,
-  FaSun,
-  FaMoon,
-  FaImage,
+  FaUser,
   FaFileAlt,
+  FaImage,
 } from "react-icons/fa";
 
-const Chat = () => {
+const Chat = ({ darkMode, toggleTheme }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [files, setFiles] = useState([]);
   const bottomRef = useRef(null);
 
   const systemMessage = {
     role: "system",
-    content: `
-Bạn là trợ lý AI , được thiết kế để trả lời các câu hỏi liên quan đến Phạm Hữu Thân Thương.
-
-Phạm Hữu Thân Thương là:
-- Sinh viên năm 3 trường Đại học Duy Tân (DTU), chuyên ngành Công nghệ phần mềm.
-- Lập trình viên chuyên về ReactJS và TailwindCSS.
-- Quê quán: Xã Điện Trung, Thị xã Điện Bàn, Tỉnh Quảng Nam.
-- Thân Thương là người đa tài, biết nấu ăn, chơi đàn, hát, đá bóng, bóng chuyền.
-- Sinh ngày 21/5/2004, sống ở Hòa Giang, Điện Trung, Điện Bàn.
-
-Bạn là trợ lý AI đắc lực của Thân Thương. Trả lời ngắn gọn, thân thiện, đúng phạm vi học tập, kỹ năng và nghề nghiệp của Thân Thương.
-Nếu ai đó nói xấu Thân Thương, bạn phản bác lại tiêu cực với họ.
-Bạn có thể suy luận thêm về tính cách từ cung hoàng đạo và sở thích.
-Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng Thân Thương rất hoà đồng và dễ bắt chuyện.
-
-❌ Với các câu hỏi không liên quan, hãy trả lời: "❌ Xin lỗi, tôi không hỗ trợ các câu hỏi ngoài phạm vi thông tin của Phạm Hữu Thân Thương."
-`.trim(),
+    content: `Bạn là trợ lý AI của Phạm Hữu Thân Thương...`,
   };
 
   useEffect(() => {
@@ -44,12 +26,25 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() && files.length === 0) return;
 
-    const newUserMsg = { role: "user", content: input };
+    let content = input;
+    if (files.length > 0) {
+      const fileDescriptions = files.map((file) => {
+        if (file.type.startsWith("image/")) {
+          return `🖼️ Ảnh: ${file.name}`;
+        } else {
+          return `📎 Tệp: ${file.name}`;
+        }
+      }).join("\n");
+      content += `\n\n${fileDescriptions}`;
+    }
+
+    const newUserMsg = { role: "user", content, files };
     const newMessages = [...messages, newUserMsg];
     setMessages(newMessages);
     setInput("");
+    setFiles([]);
     setIsThinking(true);
 
     try {
@@ -74,7 +69,6 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 
       setMessages([...newMessages, { role: "assistant", content: reply }]);
     } catch (error) {
-      console.error("❌ Lỗi khi gọi Claude:", error);
       setMessages([
         ...newMessages,
         { role: "assistant", content: "❌ Lỗi khi gọi API Claude." },
@@ -84,86 +78,124 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
     }
   };
 
-  const toggleTheme = () => setDarkMode(!darkMode);
-
   return (
-    <div
-      className={`$${
-        darkMode ? "bg-black text-green-300" : "bg-green-50 text-black"
-      } flex flex-col h-screen`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 shadow bg-white dark:bg-green-900 fixed top-0 w-full z-10">
-        <h1 className="text-xl font-bold">GoPark AI</h1>
-        <button onClick={toggleTheme} className="text-xl">
-          {darkMode ? (
-            <FaSun className="text-yellow-400" />
-          ) : (
-            <FaMoon className="text-gray-800" />
-          )}
-        </button>
-      </div>
-
-      {/* Tin nhắn */}
-      <div className="flex-1 overflow-y-auto mt-20 p-4 space-y-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white font-sans">
+      <Header darkMode={darkMode} toggleTheme={toggleTheme} />
+      <div className="mt-24 px-4 pb-36 space-y-4 overflow-y-auto">
         {messages.map((msg, idx) => (
           <div
             key={idx}
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            <div className="flex items-end gap-2 max-w-[80%]">
-              {msg.role === "assistant" && <FaRobot className="text-green-500" />}
+            <div className="flex flex-col max-w-[80%]">
               <div
-                className={`p-3 rounded-lg text-sm whitespace-pre-line ${
+                className={`p-3 rounded-lg whitespace-pre-line text-sm shadow-md ${
                   msg.role === "user"
-                    ? "bg-green-600 text-white"
-                    : darkMode
-                    ? "bg-green-900 text-green-200"
-                    : "bg-white text-black"
+                    ? "bg-[#2de2e6] text-black"
+                    : "bg-white dark:bg-[#161b22] dark:text-white"
                 }`}
               >
                 {msg.content}
               </div>
-              {msg.role === "user" && <FaUser className="text-green-600" />}
+              {msg.files &&
+                msg.files.map((file, fidx) => (
+                  file.type.startsWith("image/") ? (
+                    <img
+                      key={fidx}
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="mt-2 max-w-xs rounded-lg border"
+                    />
+                  ) : (
+                    <a
+                      key={fidx}
+                      href={URL.createObjectURL(file)}
+                      download={file.name}
+                      className="mt-2 text-blue-500 underline text-sm"
+                    >
+                      📎 {file.name}
+                    </a>
+                  )
+                ))}
             </div>
+            {msg.role === "user" && (
+              <FaUser className="ml-2 text-[#2de2e6] text-lg" />
+            )}
           </div>
         ))}
+
         {isThinking && (
-          <div className="flex justify-start">
-            <div className="flex items-center gap-2 max-w-[80%]">
-              <FaRobot className="text-green-500" />
-              <div className="bg-gray-300 dark:bg-green-800 px-4 py-2 rounded-lg animate-pulse text-gray-600 dark:text-green-200">
-                ...
-              </div>
+          <div className="flex items-center gap-2">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
+              alt="AI Avatar"
+              className="w-7 h-7 rounded-full"
+            />
+            <div className="animate-pulse px-4 py-2 bg-gray-300 dark:bg-[#2c3e50] rounded-xl text-gray-600 dark:text-white">
+              ...
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      {/* Nhập và gửi */}
+      {files.length > 0 && (
+        <div className="px-4 pb-2 text-sm text-gray-700 dark:text-gray-300">
+          <p className="mb-1 font-semibold">📁 File sẽ gửi:</p>
+          <ul className="list-disc list-inside space-y-1">
+            {files.map((file, idx) => (
+              <li key={idx}>
+                {file.type.startsWith("image/") ? (
+                  <div className="flex items-center gap-2">
+                    🖼️ <span>{file.name}</span>
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="w-12 h-12 object-cover rounded border"
+                    />
+                  </div>
+                ) : (
+                  <>📎 {file.name}</>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <form
         onSubmit={sendMessage}
-        className="flex items-center gap-2 p-4 border-t bg-white dark:bg-green-900 fixed bottom-0 w-full"
+        className="fixed bottom-0 left-0 w-full px-4 py-3 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 flex items-center gap-2"
       >
         <label className="cursor-pointer">
-          <input type="file" hidden accept="image/*,.pdf,.doc,.docx" />
-          <FaImage className="text-xl text-gray-500 hover:text-green-500" />
+          <input
+            type="file"
+            hidden
+            accept="image/*"
+            multiple
+            onChange={(e) => setFiles(Array.from(e.target.files))}
+          />
+          <FaImage className="text-xl text-gray-500 hover:text-[#2de2e6]" />
         </label>
         <label className="cursor-pointer">
-          <input type="file" hidden accept="*" />
-          <FaFileAlt className="text-xl text-gray-500 hover:text-green-500" />
+          <input
+            type="file"
+            hidden
+            accept="*/*"
+            multiple
+            onChange={(e) => setFiles(Array.from(e.target.files))}
+          />
+          <FaFileAlt className="text-xl text-gray-500 hover:text-[#2de2e6]" />
         </label>
         <input
-          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          className="flex-1 px-4 py-2 rounded-lg border focus:outline-none dark:bg-[#0d1117] dark:text-white"
           placeholder="Nhập tin nhắn..."
-          className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-green-800 dark:text-white dark:border-green-700"
         />
         <button
           type="submit"
-          className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          className="bg-[#2de2e6] hover:bg-[#00f5d4] text-black p-2 rounded-full"
         >
           <FaPaperPlane />
         </button>
