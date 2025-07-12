@@ -1,19 +1,18 @@
 // src/pages/Chat.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../components/Header";
-import {
-  FaPaperPlane,
-  FaUser,
-  FaFileAlt,
-  FaImage,
-} from "react-icons/fa";
+import { FaPaperPlane, FaUser, FaRobot } from "react-icons/fa";
+import { IoClose, IoAttach, IoImage } from "react-icons/io5";
+import { BsFileEarmarkText } from "react-icons/bs";
 
 const Chat = ({ darkMode, toggleTheme }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [files, setFiles] = useState([]);
-  const bottomRef = useRef(null);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const systemMessage = {
     role: "system",
@@ -22,10 +21,10 @@ Bạn là trợ lý AI, được thiết kế để trả lời các câu hỏi 
 
 Phạm Hữu Thân Thương là:
 - Sinh viên năm 3 trường Đại học Duy Tân (DTU), chuyên ngành Công nghệ phần mềm.
-- Lập trình viên chuyên về ReactJS và TailwindCSS.
-- Quê quán: Xã Điện Trung, Thị xã Điện Bàn, Tỉnh Quảng Nam.
+- Lập trình viên chuyên về ReactJS Nextjs và TailwindCSS.
+- Quê quán: Hòa Giang, Xã Điện Trung, Thị xã Điện Bàn, Tỉnh Quảng Nam.
 - Thân Thương là người đa tài, biết nấu ăn, chơi đàn, hát, đá bóng, bóng chuyền.
-- Sinh ngày 21/5/2004, sống ở Hòa Giang, Điện Trung, Điện Bàn.
+- Sinh ngày 21/5/2004, sống ở Hòa Giang, Điện Trung, Điện Bàn. cung song tu
 
 Bạn là trợ lý AI đắc lực của Thân Thương. Trả lời ngắn gọn, thân thiện, đúng phạm vi học tập, kỹ năng và nghề nghiệp của Thân Thương.
 Nếu ai đó nói xấu Thân Thương, bạn phản bác lại tiêu cực với họ.
@@ -36,10 +35,16 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 `.trim(),
   };
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  // Tự động scroll xuống cuối khi có tin nhắn mới
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // Xử lý gửi tin nhắn
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() && files.length === 0) return;
@@ -91,129 +96,201 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
       ]);
     } finally {
       setIsThinking(false);
+      inputRef.current?.focus();
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white font-sans">
-      <Header darkMode={darkMode} toggleTheme={toggleTheme} />
-      <div className="mt-24 px-4 pb-36 space-y-4 overflow-y-auto">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div className="flex flex-col max-w-[80%]">
-              <div
-                className={`p-3 rounded-lg whitespace-pre-line text-sm shadow-md ${
-                  msg.role === "user"
-                    ? "bg-[#2de2e6] text-black"
-                    : "bg-white dark:bg-[#161b22] dark:text-white"
-                }`}
-              >
-                {msg.content}
-              </div>
-              {msg.files &&
-                msg.files.map((file, fidx) => (
-                  file.type.startsWith("image/") ? (
-                    <img
-                      key={fidx}
-                      src={URL.createObjectURL(file)}
-                      alt={file.name}
-                      className="mt-2 max-w-xs rounded-lg border"
-                    />
-                  ) : (
-                    <a
-                      key={fidx}
-                      href={URL.createObjectURL(file)}
-                      download={file.name}
-                      className="mt-2 text-blue-500 underline text-sm"
-                    >
-                      📎 {file.name}
-                    </a>
-                  )
-                ))}
-            </div>
-            {msg.role === "user" && (
-              <FaUser className="ml-2 text-[#2de2e6] text-lg" />
-            )}
-          </div>
-        ))}
+  // Xử lý xóa file đã chọn
+  const removeFile = (index) => {
+    const newFiles = [...files];
+    newFiles.splice(index, 1);
+    setFiles(newFiles);
+  };
 
-        {isThinking && (
-          <div className="flex items-center gap-2">
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
-              alt="AI Avatar"
-              className="w-7 h-7 rounded-full"
-            />
-            <div className="animate-pulse px-4 py-2 bg-gray-300 dark:bg-[#2c3e50] rounded-xl text-gray-600 dark:text-white">
-              ...
+  return (
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white font-sans">
+      {/* Header cố định */}
+      <Header darkMode={darkMode} toggleTheme={toggleTheme} className="z-50" />
+      
+      {/* Khu vực tin nhắn */}
+      <div className="flex-1 overflow-y-auto pt-20 pb-24 px-4">
+        {/* Tin nhắn mẫu */}
+        {messages.length === 0 && (
+          <div className="flex justify-center mb-8">
+            <div className="max-w-md text-center bg-white dark:bg-[#161b22] p-4 rounded-lg shadow-md">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Chào bạn! Tôi là trợ lý ảo của Thân Thương. Hãy hỏi tôi bất cứ điều gì về cậu ấy nhé!
+              </p>
             </div>
           </div>
         )}
-        <div ref={bottomRef} />
+        
+        {/* Các tin nhắn */}
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`flex mb-6 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div className="flex flex-col max-w-[90%] md:max-w-[80%]">
+              <div className="flex items-start gap-3">
+                {msg.role === "assistant" && (
+                  <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] flex items-center justify-center mt-1 shadow-md">
+                    <FaRobot className="text-white text-lg" />
+                  </div>
+                )}
+                <div
+                  className={`p-4 rounded-2xl whitespace-pre-wrap text-sm shadow-md ${
+                    msg.role === "user"
+                      ? "bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] text-black"
+                      : "bg-white dark:bg-[#161b22] dark:text-white"
+                  }`}
+                >
+                  {msg.content}
+                </div>
+                {msg.role === "user" && (
+                  <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center mt-1 shadow-md">
+                    <FaUser className="text-gray-700 dark:text-white text-lg" />
+                  </div>
+                )}
+              </div>
+              
+              {/* File đính kèm */}
+              {msg.files && msg.files.length > 0 && (
+                <div className="mt-3 space-y-3 ml-12">
+                  {msg.files.map((file, fidx) => (
+                    <div key={fidx} className="relative group">
+                      {file.type.startsWith("image/") ? (
+                        <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            className="max-w-full md:max-w-md max-h-60 object-cover"
+                          />
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                            <p className="text-white text-sm truncate">{file.name}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <a
+                          href={URL.createObjectURL(file)}
+                          download={file.name}
+                          className="inline-flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+                        >
+                          <BsFileEarmarkText className="text-[#2de2e6] text-lg" />
+                          <span className="text-sm font-medium">{file.name}</span>
+                          <span className="text-xs text-gray-500 ml-auto">Download</span>
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Hiển thị khi AI đang xử lý */}
+        {isThinking && (
+          <div className="flex items-center gap-3 mb-6 ml-12">
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] flex items-center justify-center shadow-md">
+              <FaRobot className="text-white text-lg" />
+            </div>
+            <div className="animate-pulse px-4 py-3 bg-gray-300 dark:bg-[#2c3e50] rounded-xl text-gray-600 dark:text-white">
+              Đang xử lý...
+            </div>
+          </div>
+        )}
+        
+        <div ref={messagesEndRef} />
       </div>
 
+      {/* File đã chọn */}
       {files.length > 0 && (
-        <div className="px-4 pb-2 text-sm text-gray-700 dark:text-gray-300">
-          <p className="mb-1 font-semibold">📁 File sẽ gửi:</p>
-          <ul className="list-disc list-inside space-y-1">
+        <div className="fixed bottom-24 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 shadow-lg">
+          <div className="flex items-center gap-3 overflow-x-auto pb-2">
             {files.map((file, idx) => (
-              <li key={idx}>
+              <div key={idx} className="flex-shrink-0 relative group">
                 {file.type.startsWith("image/") ? (
-                  <div className="flex items-center gap-2">
-                    🖼️ <span>{file.name}</span>
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                     <img
                       src={URL.createObjectURL(file)}
                       alt={file.name}
-                      className="w-12 h-12 object-cover rounded border"
+                      className="w-full h-full object-cover"
                     />
+                    <button
+                      onClick={() => removeFile(idx)}
+                      className="absolute top-1 right-1 bg-red-500 rounded-full p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <IoClose size={12} />
+                    </button>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1">
+                      <p className="text-white text-xs truncate px-1">{file.name}</p>
+                    </div>
                   </div>
                 ) : (
-                  <>📎 {file.name}</>
+                  <div className="relative bg-gray-100 dark:bg-gray-800 rounded-lg p-3 pr-8 w-48">
+                    <div className="flex items-center gap-2">
+                      <BsFileEarmarkText className="text-[#2de2e6]" />
+                      <span className="text-sm truncate">{file.name}</span>
+                    </div>
+                    <button
+                      onClick={() => removeFile(idx)}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+                    >
+                      <IoClose size={14} />
+                    </button>
+                  </div>
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
 
+      {/* Form nhập tin nhắn */}
       <form
         onSubmit={sendMessage}
-        className="fixed bottom-0 left-0 w-full px-4 py-3 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 flex items-center gap-2"
+        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-3 shadow-lg"
       >
-        <label className="cursor-pointer">
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            multiple
-            onChange={(e) => setFiles(Array.from(e.target.files))}
-          />
-          <FaImage className="text-xl text-gray-500 hover:text-[#2de2e6]" />
-        </label>
-        <label className="cursor-pointer">
-          <input
-            type="file"
-            hidden
-            accept="*/*"
-            multiple
-            onChange={(e) => setFiles(Array.from(e.target.files))}
-          />
-          <FaFileAlt className="text-xl text-gray-500 hover:text-[#2de2e6]" />
-        </label>
+        <div className="flex gap-1">
+          <label className="cursor-pointer p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <input
+              type="file"
+              ref={fileInputRef}
+              hidden
+              accept="image/*"
+              multiple
+              onChange={(e) => setFiles(prev => [...prev, ...Array.from(e.target.files)])}
+            />
+            <IoImage className="text-xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6]" />
+          </label>
+          <label className="cursor-pointer p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <input
+              type="file"
+              hidden
+              accept="*/*"
+              multiple
+              onChange={(e) => setFiles(prev => [...prev, ...Array.from(e.target.files)])}
+            />
+            <IoAttach className="text-xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6]" />
+          </label>
+        </div>
+        
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 px-4 py-2 rounded-lg border focus:outline-none dark:bg-[#0d1117] dark:text-white"
+          className="flex-1 px-4 py-3 rounded-full border focus:outline-none focus:ring-2 focus:ring-[#2de2e6] dark:bg-[#0d1117] dark:text-white dark:border-gray-700"
           placeholder="Nhập tin nhắn..."
+          autoFocus
         />
+        
         <button
           type="submit"
-          className="bg-[#2de2e6] hover:bg-[#00f5d4] text-black p-2 rounded-full"
+          disabled={!input.trim() && files.length === 0}
+          className="p-3 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] text-black disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all"
         >
-          <FaPaperPlane />
+          <FaPaperPlane className="text-lg" />
         </button>
       </form>
     </div>

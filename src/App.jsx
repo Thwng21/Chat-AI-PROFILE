@@ -24,7 +24,7 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div className={darkMode ? "dark" : ""}>
+    <div className={`font-sans ${darkMode ? "dark" : ""}`}> {/* Apply TikTok-like font */}
       <Router>
         <Routes>
           <Route
