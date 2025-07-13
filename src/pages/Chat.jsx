@@ -12,11 +12,12 @@ const Chat = ({ darkMode, toggleTheme }) => {
   const [files, setFiles] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [speechError, setSpeechError] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Giữ nguyên systemMessage ban đầu của bạn
+  // System message giữ nguyên
   const systemMessage = {
     role: "system",
     content: `
@@ -38,37 +39,73 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 `.trim(),
   };
 
-  // Khởi tạo SpeechRecognition
+  // Khởi tạo SpeechRecognition với xử lý lỗi tốt hơn
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'vi-VN';
-      
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInput(prev => prev ? `${prev} ${transcript}` : transcript);
-      };
-      
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error', event.error);
-        setIsListening(false);
-      };
-      
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-      
-      window.speechRecognition = recognition;
-    } else {
+    if (!SpeechRecognition) {
       setSpeechSupported(false);
+      setSpeechError("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói");
+      return;
     }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'vi-VN';
+    
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+    };
+    
+    recognition.onerror = (event) => {
+      console.error('Lỗi nhận diện giọng nói:', event.error);
+      setIsListening(false);
+      setSpeechError(getSpeechError(event.error));
+    };
+    
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+    
+    window.speechRecognition = recognition;
+
+    // Kiểm tra quyền microphone
+    checkMicrophonePermission();
   }, []);
 
-  // Giữ nguyên hàm scrollToBottom ban đầu
+  const getSpeechError = (error) => {
+    switch(error) {
+      case 'no-speech':
+        return 'Không phát hiện giọng nói. Vui lòng thử lại';
+      case 'audio-capture':
+        return 'Không thể truy cập microphone';
+      case 'not-allowed':
+        return 'Bạn đã từ chối quyền sử dụng microphone';
+      default:
+        return 'Lỗi nhận diện giọng nói. Vui lòng thử lại';
+    }
+  };
+
+  const checkMicrophonePermission = async () => {
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+      if (permissionStatus.state === 'denied') {
+        setSpeechError("Bạn đã từ chối quyền sử dụng microphone");
+      }
+      permissionStatus.onchange = () => {
+        if (permissionStatus.state === 'granted') {
+          setSpeechError(null);
+        } else {
+          setSpeechError("Quyền microphone bị từ chối");
+        }
+      };
+    } catch (err) {
+      console.error("Không thể kiểm tra quyền microphone:", err);
+    }
+  };
+
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -77,7 +114,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Giữ nguyên hàm sendMessage ban đầu
+  // Hàm gửi tin nhắn giữ nguyên
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() && files.length === 0) return;
@@ -133,23 +170,29 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
     }
   };
 
-  // Thêm hàm xử lý nhận diện giọng nói
-  const toggleSpeechRecognition = () => {
+  // Hàm bật/tắt nhận diện giọng nói với xử lý lỗi
+  const toggleSpeechRecognition = async () => {
     if (isListening) {
       window.speechRecognition.stop();
       setIsListening(false);
-    } else {
-      try {
-        window.speechRecognition.start();
-        setIsListening(true);
-      } catch (error) {
-        console.error('Speech recognition error:', error);
-        setSpeechSupported(false);
-      }
+      return;
+    }
+
+    try {
+      // Yêu cầu quyền microphone trước khi bắt đầu
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      window.speechRecognition.start();
+      setIsListening(true);
+      setSpeechError(null);
+    } catch (err) {
+      console.error('Lỗi microphone:', err);
+      setIsListening(false);
+      setSpeechError("Không thể truy cập microphone. Vui lòng kiểm tra quyền truy cập");
+      setSpeechSupported(false);
     }
   };
 
-  // Giữ nguyên hàm removeFile ban đầu
   const removeFile = (index) => {
     const newFiles = [...files];
     newFiles.splice(index, 1);
@@ -158,12 +201,9 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white font-sans">
-      {/* Header cố định - giữ nguyên */}
       <Header darkMode={darkMode} toggleTheme={toggleTheme} className="z-50" />
       
-      {/* Khu vực tin nhắn - giữ nguyên */}
       <div className="flex-1 overflow-y-auto pt-20 pb-24 px-4">
-        {/* Tin nhắn mẫu - giữ nguyên */}
         {messages.length === 0 && (
           <div className="flex justify-center mb-8">
             <div className="max-w-md text-center bg-white dark:bg-[#161b22] p-4 rounded-lg shadow-md">
@@ -174,7 +214,6 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
           </div>
         )}
         
-        {/* Các tin nhắn - giữ nguyên */}
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -203,7 +242,6 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
                 )}
               </div>
               
-              {/* File đính kèm - giữ nguyên */}
               {msg.files && msg.files.length > 0 && (
                 <div className="mt-3 space-y-3 ml-12">
                   {msg.files.map((file, fidx) => (
@@ -238,7 +276,6 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
           </div>
         ))}
 
-        {/* Hiển thị khi AI đang xử lý - giữ nguyên */}
         {isThinking && (
           <div className="flex items-center gap-3 mb-6 ml-12">
             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] flex items-center justify-center shadow-md">
@@ -253,7 +290,6 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
         <div ref={messagesEndRef} />
       </div>
 
-      {/* File đã chọn - giữ nguyên */}
       {files.length > 0 && (
         <div className="fixed bottom-24 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 shadow-lg">
           <div className="flex items-center gap-3 overflow-x-auto pb-2">
@@ -296,7 +332,6 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
         </div>
       )}
 
-      {/* Form nhập tin nhắn - thêm nút nhận diện giọng nói */}
       <form
         onSubmit={sendMessage}
         className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-3 shadow-lg"
@@ -334,18 +369,29 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
             placeholder="Nhập tin nhắn..."
             autoFocus
           />
-          {speechSupported && (
-            <button
-              type="button"
-              onClick={toggleSpeechRecognition}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full ${
-                isListening 
-                  ? 'text-red-500 animate-pulse' 
-                  : 'text-gray-500 hover:text-[#2de2e6]'
-              }`}
-            >
-              {isListening ? <FaStop /> : <FaMicrophone />}
-            </button>
+          {speechSupported ? (
+            <>
+              <button
+                type="button"
+                onClick={toggleSpeechRecognition}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full ${
+                  isListening 
+                    ? 'text-red-500 animate-pulse' 
+                    : 'text-gray-500 hover:text-[#2de2e6]'
+                }`}
+              >
+                {isListening ? <FaStop /> : <FaMicrophone />}
+              </button>
+              {speechError && (
+                <div className="absolute -top-8 right-0 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 text-xs px-2 py-1 rounded">
+                  {speechError}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs">
+              Không hỗ trợ
+            </div>
           )}
         </div>
         
