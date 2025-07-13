@@ -1,19 +1,22 @@
-// src/pages/Chat.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../components/Header";
-import { FaPaperPlane, FaUser, FaRobot } from "react-icons/fa";
+import { FaPaperPlane, FaUser, FaRobot, FaMicrophone, FaStop } from "react-icons/fa";
 import { IoClose, IoAttach, IoImage } from "react-icons/io5";
 import { BsFileEarmarkText } from "react-icons/bs";
+import { RiLoader4Line } from "react-icons/ri";
 
 const Chat = ({ darkMode, toggleTheme }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [files, setFiles] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(true);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  // Giữ nguyên systemMessage ban đầu của bạn
   const systemMessage = {
     role: "system",
     content: `
@@ -35,7 +38,37 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 `.trim(),
   };
 
-  // Tự động scroll xuống cuối khi có tin nhắn mới
+  // Khởi tạo SpeechRecognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'vi-VN';
+      
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+      };
+      
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+      
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+      
+      window.speechRecognition = recognition;
+    } else {
+      setSpeechSupported(false);
+    }
+  }, []);
+
+  // Giữ nguyên hàm scrollToBottom ban đầu
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -44,7 +77,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Xử lý gửi tin nhắn
+  // Giữ nguyên hàm sendMessage ban đầu
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() && files.length === 0) return;
@@ -100,7 +133,23 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
     }
   };
 
-  // Xử lý xóa file đã chọn
+  // Thêm hàm xử lý nhận diện giọng nói
+  const toggleSpeechRecognition = () => {
+    if (isListening) {
+      window.speechRecognition.stop();
+      setIsListening(false);
+    } else {
+      try {
+        window.speechRecognition.start();
+        setIsListening(true);
+      } catch (error) {
+        console.error('Speech recognition error:', error);
+        setSpeechSupported(false);
+      }
+    }
+  };
+
+  // Giữ nguyên hàm removeFile ban đầu
   const removeFile = (index) => {
     const newFiles = [...files];
     newFiles.splice(index, 1);
@@ -109,12 +158,12 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white font-sans">
-      {/* Header cố định */}
+      {/* Header cố định - giữ nguyên */}
       <Header darkMode={darkMode} toggleTheme={toggleTheme} className="z-50" />
       
-      {/* Khu vực tin nhắn */}
+      {/* Khu vực tin nhắn - giữ nguyên */}
       <div className="flex-1 overflow-y-auto pt-20 pb-24 px-4">
-        {/* Tin nhắn mẫu */}
+        {/* Tin nhắn mẫu - giữ nguyên */}
         {messages.length === 0 && (
           <div className="flex justify-center mb-8">
             <div className="max-w-md text-center bg-white dark:bg-[#161b22] p-4 rounded-lg shadow-md">
@@ -125,7 +174,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
           </div>
         )}
         
-        {/* Các tin nhắn */}
+        {/* Các tin nhắn - giữ nguyên */}
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -154,7 +203,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
                 )}
               </div>
               
-              {/* File đính kèm */}
+              {/* File đính kèm - giữ nguyên */}
               {msg.files && msg.files.length > 0 && (
                 <div className="mt-3 space-y-3 ml-12">
                   {msg.files.map((file, fidx) => (
@@ -189,7 +238,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
           </div>
         ))}
 
-        {/* Hiển thị khi AI đang xử lý */}
+        {/* Hiển thị khi AI đang xử lý - giữ nguyên */}
         {isThinking && (
           <div className="flex items-center gap-3 mb-6 ml-12">
             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] flex items-center justify-center shadow-md">
@@ -204,7 +253,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
         <div ref={messagesEndRef} />
       </div>
 
-      {/* File đã chọn */}
+      {/* File đã chọn - giữ nguyên */}
       {files.length > 0 && (
         <div className="fixed bottom-24 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 shadow-lg">
           <div className="flex items-center gap-3 overflow-x-auto pb-2">
@@ -247,7 +296,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
         </div>
       )}
 
-      {/* Form nhập tin nhắn */}
+      {/* Form nhập tin nhắn - thêm nút nhận diện giọng nói */}
       <form
         onSubmit={sendMessage}
         className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-3 shadow-lg"
@@ -276,14 +325,29 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
           </label>
         </div>
         
-        <input
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 px-4 py-3 rounded-full border focus:outline-none focus:ring-2 focus:ring-[#2de2e6] dark:bg-[#0d1117] dark:text-white dark:border-gray-700"
-          placeholder="Nhập tin nhắn..."
-          autoFocus
-        />
+        <div className="relative flex-1">
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="w-full px-4 py-3 rounded-full border focus:outline-none focus:ring-2 focus:ring-[#2de2e6] dark:bg-[#0d1117] dark:text-white dark:border-gray-700"
+            placeholder="Nhập tin nhắn..."
+            autoFocus
+          />
+          {speechSupported && (
+            <button
+              type="button"
+              onClick={toggleSpeechRecognition}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full ${
+                isListening 
+                  ? 'text-red-500 animate-pulse' 
+                  : 'text-gray-500 hover:text-[#2de2e6]'
+              }`}
+            >
+              {isListening ? <FaStop /> : <FaMicrophone />}
+            </button>
+          )}
+        </div>
         
         <button
           type="submit"

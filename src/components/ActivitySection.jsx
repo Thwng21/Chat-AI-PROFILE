@@ -25,6 +25,21 @@ import codingImg from '../assets/bg1.jpg';
 import designImg from '../assets/bg1.jpg';
 import sportImg from '../assets/bg1.jpg';
 import musicImg from '../assets/bg1.jpg';
+import dba from '../assets/db.jpg';
+
+//hoc 
+import hoc1 from '../assets/h1.jpg';
+import hoc2 from '../assets/h2.jpg';
+import hoc3 from '../assets/h3.jpg';
+import hoc4 from '../assets/h4.jpg';
+import hoc5 from '../assets/h5.jpg';
+
+//laptrinh
+import laptrinh1 from '../assets/lt1.jpg';
+import laptrinh3 from '../assets/lt3.jpg';
+import laptrinh4 from '../assets/lt4.jpg';
+import laptrinh5 from '../assets/lt5.jpg';
+import laptrinh6 from '../assets/lt6.jpg';
 
 
 const activities = [
@@ -36,12 +51,12 @@ const activities = [
     time: "2021 - Hiện tại",
     hours: "40h/tuần",
     color: "from-blue-500 to-cyan-400",
-    images: [studyImg, codingImg, designImg],
+    images: [hoc1, hoc2, hoc3, hoc4, hoc5],
     details: [
       { icon: <FaGraduationCap />, text: "Đại học Duy Tân - Công nghệ phần mềm" },
-      { icon: <FaBook />, text: "Điểm trung bình: 3.6/4.0" },
+      { icon: <FaBook />, text: "Điểm trung bình: 3.5/4.0" },
       { icon: <FaCode />, text: "Tham gia CLB nghiên cứu khoa học" },
-      { icon: <GiBrain />, text: "Đạt học bổng 3 kỳ liên tiếp" }
+      { icon: <GiBrain />, text: "Luôn nỗ lực phát triển trên lớp" }
     ],
     location: "Đà Nẵng, Việt Nam",
     year: "2021"
@@ -51,10 +66,10 @@ const activities = [
     icon: <FaLaptopCode className="text-2xl" />,
     title: "Lập trình",
     description: "Phát triển ứng dụng web với ReactJS, TailwindCSS và các công nghệ hiện đại. Có kinh nghiệm xây dựng các ứng dụng fullstack.",
-    time: "2020 - Hiện tại",
-    hours: "25h/tuần",
+    time: "2022 - Hiện tại",
+    hours: "15h/1 ngày",
     color: "from-purple-500 to-pink-500",
-    images: [codingImg, studyImg, designImg],
+    images: [laptrinh1, laptrinh3, laptrinh4, laptrinh5, laptrinh6],
     details: [
       { icon: <FaCode />, text: "Thành thạo ReactJS, NextJS" },
       { icon: <FaCode />, text: "Kinh nghiệm với Node.js và Express" },
@@ -90,7 +105,7 @@ const activities = [
     time: "Thứ 3,5,7 hàng tuần",
     hours: "8h/tuần",
     color: "from-emerald-500 to-teal-400",
-    images: [sportImg, musicImg, studyImg],
+    images: [sportImg, dba],
     details: [
       { icon: <GiSoccerBall />, text: "Đội trưởng đội bóng đá phòng" },
       { icon: <GiSoccerBall />, text: "Giải nhì bóng chuyền sinh viên" },

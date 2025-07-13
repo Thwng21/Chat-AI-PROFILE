@@ -8,11 +8,12 @@ import {
   FaBullseye, 
   FaHeart, 
   FaMapMarkerAlt,
-  FaReact
+  FaReact,
+  FaNodeJs
 } from "react-icons/fa";
 import { GiSpiderWeb, GiAbstract024, GiBrain } from "react-icons/gi";
 import { RiLightbulbFlashLine, RiUserHeartLine } from "react-icons/ri";
-import { SiTailwindcss } from "react-icons/si";
+import { SiTailwindcss, SiNextdotjs, SiMongodb, SiExpress } from "react-icons/si";
 
 const AboutSection = () => {
   const controls = useAnimation();
@@ -89,7 +90,7 @@ const AboutSection = () => {
       variants={containerVariants}
       className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 dark:from-[#0a0d12] dark:to-[#161b22]"
     >
-      {/* Animated background elements */}
+      {/* Các phần tử nền động */}
       <motion.div 
         initial={{ opacity: 0, rotate: -15 }}
         animate={{ opacity: 0.05, rotate: 0 }}
@@ -109,7 +110,7 @@ const AboutSection = () => {
       </motion.div>
 
       <div className="relative max-w-6xl mx-auto">
-        {/* Animated title section */}
+        {/* Phần tiêu đề động */}
         <motion.div 
           variants={itemVariants}
           className="text-center mb-20"
@@ -126,19 +127,19 @@ const AboutSection = () => {
           <motion.h2 
             className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] dark:from-[#00f5d4] dark:to-[#2de2e6] mb-4"
           >
-            My Creative Universe
+            Vũ Trụ Sáng Tạo Của Tôi
           </motion.h2>
           
           <motion.p 
             className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
           >
-            Where <span className="font-medium text-[#2de2e6] dark:text-[#00f5d4]">code</span> meets <span className="font-medium text-[#2de2e6] dark:text-[#00f5d4]">creativity</span>
+            Nơi <span className="font-medium text-[#2de2e6] dark:text-[#00f5d4]">code</span> gặp gỡ <span className="font-medium text-[#2de2e6] dark:text-[#00f5d4]">sáng tạo</span>
           </motion.p>
         </motion.div>
 
-        {/* Interactive cards grid */}
+        {/* Lưới card tương tác */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Profile Card - Enhanced with personal touch */}
+          {/* Card Thông Tin Cá Nhân */}
           <motion.div
             variants={itemVariants}
             whileHover="hover"
@@ -161,7 +162,7 @@ const AboutSection = () => {
                 <div className="p-3 rounded-xl bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] text-white shadow-lg">
                   <RiUserHeartLine className="text-2xl" />
                 </div>
-                <h3 className="ml-4 text-xl font-bold text-gray-800 dark:text-white">Personal Identity</h3>
+                <h3 className="ml-4 text-xl font-bold text-gray-800 dark:text-white">Thông Tin Cá Nhân</h3>
               </div>
               
               <div className="space-y-4">
@@ -170,12 +171,12 @@ const AboutSection = () => {
                     className="relative inline-block"
                     whileHover="hover"
                   >
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Full Name</h4>
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Họ và Tên</h4>
                     <motion.span 
                       variants={highlightVariants}
                       className="absolute bottom-0 left-0 h-0.5 bg-[#2de2e6]"
                     />
-                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Phạm Hữu Thân Thương</p>
+                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200 ">Phạm Hữu Thân Thương</p>
                   </motion.div>
                 </div>
                 
@@ -184,13 +185,26 @@ const AboutSection = () => {
                     className="relative inline-block"
                     whileHover="hover"
                   >
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Location</h4>
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Địa Chỉ</h4>
                     <motion.span 
                       variants={highlightVariants}
                       className="absolute bottom-0 left-0 h-0.5 bg-[#2de2e6]"
                     />
-                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Điện Trung, Quảng Nam</p>
+                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Hoà Giang, Điện Trung, Quảng Nam</p>
                   </motion.div>
+                   <motion.div 
+                    className="relative inline-block"
+                    whileHover="hover"
+                  >
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">.........................</h4>
+                    <motion.span 
+                      variants={highlightVariants}
+                      className="absolute bottom-0 left-0 h-0.5 bg-[#2de2e6]"
+                    />
+                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200">21/05/2004</p>
+                  </motion.div>
+                  
+                  
                 </div>
               </div>
               
@@ -206,7 +220,7 @@ const AboutSection = () => {
             </div>
           </motion.div>
 
-          {/* Education Card - With animated progress */}
+          {/* Card Học Vấn */}
           <motion.div
             variants={itemVariants}
             whileHover="hover"
@@ -229,17 +243,17 @@ const AboutSection = () => {
                 <div className="p-3 rounded-xl bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] text-white shadow-lg">
                   <FaGraduationCap className="text-2xl" />
                 </div>
-                <h3 className="ml-4 text-xl font-bold text-gray-800 dark:text-white">Education Path</h3>
+                <h3 className="ml-4 text-xl font-bold text-gray-800 dark:text-white">Học Vấn</h3>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">University</h4>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Trường Đại Học</h4>
                   <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Đại học Duy Tân (DTU)</p>
                 </div>
                 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Progress</h4>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Tiến Độ</h4>
                   <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2.5">
                     <motion.div 
                       initial={{ width: 0 }}
@@ -248,7 +262,7 @@ const AboutSection = () => {
                       className="h-2.5 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4]"
                     />
                   </div>
-                  <p className="text-right text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">Year 3/4 (75%)</p>
+                  <p className="text-right text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">Năm 3/4 (75%)</p>
                 </div>
               </div>
               
@@ -264,7 +278,7 @@ const AboutSection = () => {
             </div>
           </motion.div>
 
-          {/* Tech Stack Card - With animated icons */}
+          {/* Card Công Nghệ - Đã thêm Next.js, MongoDB, Express.js */}
           <motion.div
             variants={itemVariants}
             whileHover="hover"
@@ -287,19 +301,26 @@ const AboutSection = () => {
                 <div className="p-3 rounded-xl bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] text-white shadow-lg">
                   <FaCode className="text-2xl" />
                 </div>
-                <h3 className="ml-4 text-xl font-bold text-gray-800 dark:text-white">Tech Stack</h3>
+                <h3 className="ml-4 text-xl font-bold text-gray-800 dark:text-white">Công Nghệ Sử Dụng</h3>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Core Skills</h4>
-                  <div className="flex space-x-4">
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Kỹ Năng Chính</h4>
+                  <div className="grid grid-cols-4 gap-4">
                     <motion.div
                       whileHover={{ y: -5, scale: 1.1 }}
                       className="flex flex-col items-center"
                     >
                       <FaReact className="text-3xl text-[#61DAFB]" />
                       <span className="text-xs mt-1">React</span>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.1 }}
+                      className="flex flex-col items-center"
+                    >
+                      <SiNextdotjs className="text-3xl text-black dark:text-white" />
+                      <span className="text-xs mt-1">Next.js</span>
                     </motion.div>
                     <motion.div
                       whileHover={{ y: -5, scale: 1.1 }}
@@ -312,6 +333,27 @@ const AboutSection = () => {
                       whileHover={{ y: -5, scale: 1.1 }}
                       className="flex flex-col items-center"
                     >
+                      <SiMongodb className="text-3xl text-[#47A248]" />
+                      <span className="text-xs mt-1">MongoDB</span>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.1 }}
+                      className="flex flex-col items-center"
+                    >
+                      <SiExpress className="text-3xl text-gray-800 dark:text-gray-200" />
+                      <span className="text-xs mt-1">Express</span>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.1 }}
+                      className="flex flex-col items-center"
+                    >
+                      <FaNodeJs className="text-3xl text-[#68A063]" />
+                      <span className="text-xs mt-1">Node.js</span>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.1 }}
+                      className="flex flex-col items-center"
+                    >
                       <RiLightbulbFlashLine className="text-3xl text-[#FFD700]" />
                       <span className="text-xs mt-1">UI/UX</span>
                     </motion.div>
@@ -319,8 +361,8 @@ const AboutSection = () => {
                 </div>
                 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Experience Level</h4>
-                  <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Intermediate</p>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Trình Độ</h4>
+                  <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Trung Cấp</p>
                 </div>
               </div>
               
@@ -336,7 +378,7 @@ const AboutSection = () => {
             </div>
           </motion.div>
 
-          {/* [Thêm các card khác tương tự...] */}
+          {/* [Có thể thêm các card khác tương tự...] */}
 
         </div>
       </div>

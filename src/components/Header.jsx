@@ -16,7 +16,7 @@ const Header = ({ darkMode, toggleTheme }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-
+ 
   return (
     <header className="bg-white dark:bg-[#161b22] shadow fixed z-[1000] top-0 left-0 w-full px-4 py-3 flex justify-between items-center transition-colors duration-300 font-sans">
       <h1 className="text-xl cursor-pointer font-bold text-blue-600 dark:text-green-400 flex items-center gap-2">

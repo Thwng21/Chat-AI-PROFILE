@@ -2,6 +2,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useInView } from "framer-motion";
 import avatar from "../assets/avt.png"; // Placeholder for avatar image
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   const ref = useRef(null);
@@ -33,7 +34,7 @@ const HeroSection = () => {
     return (
       <motion.div
         className={`absolute ${top} ${left} z-0`}
-        style={{ 
+        style={{
           width: `${size}px`,
           height: `${size}px`
         }}
@@ -54,7 +55,7 @@ const HeroSection = () => {
           viewBox="0 0 512 512"
           className="w-full h-full drop-shadow-lg"
         >
-          <path 
+          <path
             d="M256 256c0-70.7-57.3-128-128-128S0 185.3 0 256s57.3 128 128 128s128-57.3 128-128z"
             fill="#4f46e5"
             className="dark:fill-[#00b4d8]"
@@ -75,7 +76,7 @@ const HeroSection = () => {
           />
           <circle cx="200" cy="220" r="10" fill="white" />
           <circle cx="200" cy="220" r="5" fill="black" />
-          <path 
+          <path
             d="M220 230c10-5 20-5 30 0s10 15 0 20s-20 5-30 0s-10-15 0-20z"
             fill="#f59e0b"
           />
@@ -88,8 +89,8 @@ const HeroSection = () => {
   const RealisticCloud = ({ size, top, left, delay }) => (
     <motion.div
       className={`absolute ${top} ${left} z-0`}
-      style={{ 
-        width: `${size}px`, 
+      style={{
+        width: `${size}px`,
         height: `${size * 0.6}px`
       }}
       animate={{
@@ -121,6 +122,15 @@ const HeroSection = () => {
       </svg>
     </motion.div>
   );
+  const handleDownloadCV = () => {
+    const cvUrl = '/cv.pdf';
+    const link = document.createElement('a');
+    link.href = cvUrl;
+    link.download = 'PhamHuuThanThuong_CV.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <section
@@ -147,17 +157,17 @@ const HeroSection = () => {
       >
         <div className="text-center md:text-left max-w-xl">
           <h1 className="text-3xl md:text-5xl font-extrabold text-sky-700 dark:text-[#00f5d4] mb-4 leading-tight">
-            Xin chào, tôi là <br /> 
+            Xin chào, tôi là <br />
             <span className="bg-gradient-to-r from-sky-600 to-blue-600 dark:from-[#00f5d4] dark:to-[#00b4d8] bg-clip-text text-transparent">
               Phạm Hữu Thân Thương
             </span> 👋
           </h1>
-          
+
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-            Sinh viên ngành Công nghệ Phần mềm tại Đại học Duy Tân. 
+            Sinh viên ngành Công nghệ Phần mềm tại Đại học Duy Tân.
             Chuyên về phát triển ứng dụng web với:
           </p>
-          
+
           <ul className="grid grid-cols-2 gap-2 mb-6 text-gray-600 dark:text-gray-400">
             <li className="flex items-center">
               <span className="w-2 h-2 bg-sky-500 rounded-full mr-2"></span>
@@ -176,16 +186,19 @@ const HeroSection = () => {
               NodeJS
             </li>
           </ul>
-          
+
           <div className="flex gap-4 justify-center md:justify-start">
-            <button className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-full shadow transition flex items-center">
+            <button
+              onClick={handleDownloadCV}
+              className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-full shadow transition flex items-center"
+            >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7m18 0l-9-9-9 9m18 0H3" />
               </svg>
               Tải CV
             </button>
             <button className="border border-sky-600 text-sky-600 dark:border-[#00f5d4] dark:text-[#00f5d4] hover:bg-sky-50 dark:hover:bg-sky-900/30 px-6 py-2 rounded-full shadow transition">
-              Liên hệ
+              <Link to="/about" className="flex items-center"> Liên hệ</Link>
             </button>
           </div>
         </div>
