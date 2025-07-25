@@ -1,5 +1,4 @@
-// src/components/Header.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaSun,
@@ -10,41 +9,53 @@ import {
   FaInfoCircle,
 } from "react-icons/fa";
 import { RiAccountPinBoxFill } from "react-icons/ri";
-<RiAccountPinBoxFill className="text-2xl" />
+import { useTheme } from "../context/ThemeContext"; // 👈 thêm dòng này
 
-const Header = ({ darkMode, toggleTheme }) => {
+const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [time, setTime] = useState(new Date());
+
+  const { darkMode, toggleTheme } = useTheme(); // 👈 lấy từ context
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
- 
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (date) =>
+    date.toLocaleTimeString("vi-VN", { hour12: false });
+
   return (
     <header className="bg-white dark:bg-[#161b22] shadow fixed z-[1000] top-0 left-0 w-full px-4 py-3 flex justify-between items-center transition-colors duration-300 font-sans">
-      <h1 className="text-xl cursor-pointer font-bold text-blue-600 dark:text-green-400 flex items-center gap-2">
-        <Link to="/" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300 transition">
-          <RiAccountPinBoxFill className="text-2xl" />Gwouth Profile
+      <h1 className="flex items-center gap-2 text-xl font-bold text-blue-600 cursor-pointer dark:text-green-400">
+        <Link
+          to="/"
+          className="flex items-center gap-1 transition hover:text-blue-500 dark:hover:text-green-300"
+        >
+          <RiAccountPinBoxFill className="text-2xl" /> Gwouth Profile
         </Link>
       </h1>
 
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex space-x-6 text-gray-700 dark:text-gray-200 items-center text-sm font-medium">
-        <Link to="/" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300 transition">
+      <nav className="items-center hidden space-x-6 text-sm font-medium text-gray-700 md:flex dark:text-gray-200">
+        <Link to="/" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300">
           <FaHome /> Trang chủ
         </Link>
-        <Link to="/chat" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300 transition">
+        <Link to="/chat" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300">
           <FaComments /> Chat
         </Link>
-        <Link to="/about" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300 transition">
+        <Link to="/about" className="flex items-center gap-1 hover:text-blue-500 dark:hover:text-green-300">
           <FaInfoCircle /> Thông tin
         </Link>
       </nav>
 
-      {/* Theme Toggle + Mobile Menu Toggle */}
-      <div className="flex items-center gap-3">
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="text-xl hover:scale-110 transition-transform duration-200"
-        >
+      <div className="flex items-center gap-4">
+        <span className="font-mono text-xs text-gray-700 sm:text-sm dark:text-gray-300">
+          🕒 {formatTime(time)}
+        </span>
+
+        <button onClick={toggleTheme} className="text-xl transition-transform hover:scale-110">
           {darkMode ? (
             <FaSun className="text-yellow-400" />
           ) : (
@@ -52,37 +63,20 @@ const Header = ({ darkMode, toggleTheme }) => {
           )}
         </button>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          onClick={toggleMenu}
-          className="text-xl text-gray-700 dark:text-gray-200 md:hidden"
-        >
+        <button onClick={toggleMenu} className="text-xl text-gray-700 dark:text-gray-200 md:hidden">
           <FaBars />
         </button>
       </div>
 
-      {/* Mobile Dropdown Menu */}
       {menuOpen && (
         <div className="absolute top-16 right-4 bg-white dark:bg-[#161b22] shadow-lg rounded-lg p-4 space-y-3 md:hidden text-gray-700 dark:text-gray-200 text-sm font-medium w-44">
-          <Link
-            to="/"
-            className="flex items-center gap-2 hover:text-blue-500 dark:hover:text-green-300"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link to="/" className="flex items-center gap-2 hover:text-blue-500 dark:hover:text-green-300" onClick={() => setMenuOpen(false)}>
             <FaHome /> Trang chủ
           </Link>
-          <Link
-            to="/chat"
-            className="flex items-center gap-2 hover:text-blue-500 dark:hover:text-green-300"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link to="/chat" className="flex items-center gap-2 hover:text-blue-500 dark:hover:text-green-300" onClick={() => setMenuOpen(false)}>
             <FaComments /> Chat
           </Link>
-          <Link
-            to="/about"
-            className="flex items-center gap-2 hover:text-blue-500 dark:hover:text-green-300"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link to="/about" className="flex items-center gap-2 hover:text-blue-500 dark:hover:text-green-300" onClick={() => setMenuOpen(false)}>
             <FaInfoCircle /> Thông tin
           </Link>
         </div>

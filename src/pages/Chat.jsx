@@ -17,6 +17,8 @@ const Chat = ({ darkMode, toggleTheme }) => {
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  
+
   // System message giữ nguyên
   const systemMessage = {
     role: "system",
@@ -203,7 +205,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white font-sans">
       <Header darkMode={darkMode} toggleTheme={toggleTheme} className="z-50" />
       
-      <div className="flex-1 overflow-y-auto pt-20 pb-24 px-4">
+      <div className="flex-1 px-4 pt-20 pb-24 overflow-y-auto">
         {messages.length === 0 && (
           <div className="flex justify-center mb-8">
             <div className="max-w-md text-center bg-white dark:bg-[#161b22] p-4 rounded-lg shadow-md">
@@ -223,7 +225,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
               <div className="flex items-start gap-3">
                 {msg.role === "assistant" && (
                   <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] flex items-center justify-center mt-1 shadow-md">
-                    <FaRobot className="text-white text-lg" />
+                    <FaRobot className="text-lg text-white" />
                   </div>
                 )}
                 <div
@@ -236,36 +238,36 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
                   {msg.content}
                 </div>
                 {msg.role === "user" && (
-                  <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center mt-1 shadow-md">
-                    <FaUser className="text-gray-700 dark:text-white text-lg" />
+                  <div className="flex items-center justify-center flex-shrink-0 mt-1 bg-gray-300 rounded-full shadow-md w-9 h-9 dark:bg-gray-600">
+                    <FaUser className="text-lg text-gray-700 dark:text-white" />
                   </div>
                 )}
               </div>
               
               {msg.files && msg.files.length > 0 && (
-                <div className="mt-3 space-y-3 ml-12">
+                <div className="mt-3 ml-12 space-y-3">
                   {msg.files.map((file, fidx) => (
                     <div key={fidx} className="relative group">
                       {file.type.startsWith("image/") ? (
-                        <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div className="relative overflow-hidden border border-gray-200 shadow-sm rounded-xl dark:border-gray-700">
                           <img
                             src={URL.createObjectURL(file)}
                             alt={file.name}
-                            className="max-w-full md:max-w-md max-h-60 object-cover"
+                            className="object-cover max-w-full md:max-w-md max-h-60"
                           />
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                            <p className="text-white text-sm truncate">{file.name}</p>
+                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+                            <p className="text-sm text-white truncate">{file.name}</p>
                           </div>
                         </div>
                       ) : (
                         <a
                           href={URL.createObjectURL(file)}
                           download={file.name}
-                          className="inline-flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+                          className="inline-flex items-center gap-2 px-4 py-3 transition-colors bg-white border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                           <BsFileEarmarkText className="text-[#2de2e6] text-lg" />
                           <span className="text-sm font-medium">{file.name}</span>
-                          <span className="text-xs text-gray-500 ml-auto">Download</span>
+                          <span className="ml-auto text-xs text-gray-500">Download</span>
                         </a>
                       )}
                     </div>
@@ -279,7 +281,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
         {isThinking && (
           <div className="flex items-center gap-3 mb-6 ml-12">
             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-r from-[#2de2e6] to-[#00f5d4] flex items-center justify-center shadow-md">
-              <FaRobot className="text-white text-lg" />
+              <FaRobot className="text-lg text-white" />
             </div>
             <div className="animate-pulse px-4 py-3 bg-gray-300 dark:bg-[#2c3e50] rounded-xl text-gray-600 dark:text-white">
               Đang xử lý...
@@ -292,35 +294,35 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
 
       {files.length > 0 && (
         <div className="fixed bottom-24 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 shadow-lg">
-          <div className="flex items-center gap-3 overflow-x-auto pb-2">
+          <div className="flex items-center gap-3 pb-2 overflow-x-auto">
             {files.map((file, idx) => (
-              <div key={idx} className="flex-shrink-0 relative group">
+              <div key={idx} className="relative flex-shrink-0 group">
                 {file.type.startsWith("image/") ? (
-                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                  <div className="relative w-24 h-24 overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700">
                     <img
                       src={URL.createObjectURL(file)}
                       alt={file.name}
-                      className="w-full h-full object-cover"
+                      className="object-cover w-full h-full"
                     />
                     <button
                       onClick={() => removeFile(idx)}
-                      className="absolute top-1 right-1 bg-red-500 rounded-full p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute p-1 text-white transition-opacity bg-red-500 rounded-full opacity-0 top-1 right-1 group-hover:opacity-100"
                     >
                       <IoClose size={12} />
                     </button>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1">
-                      <p className="text-white text-xs truncate px-1">{file.name}</p>
+                    <div className="absolute bottom-0 left-0 right-0 p-1 bg-black/50">
+                      <p className="px-1 text-xs text-white truncate">{file.name}</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="relative bg-gray-100 dark:bg-gray-800 rounded-lg p-3 pr-8 w-48">
+                  <div className="relative w-48 p-3 pr-8 bg-gray-100 rounded-lg dark:bg-gray-800">
                     <div className="flex items-center gap-2">
                       <BsFileEarmarkText className="text-[#2de2e6]" />
                       <span className="text-sm truncate">{file.name}</span>
                     </div>
                     <button
                       onClick={() => removeFile(idx)}
-                      className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+                      className="absolute text-gray-500 top-2 right-2 hover:text-red-500"
                     >
                       <IoClose size={14} />
                     </button>
@@ -337,7 +339,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
         className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#161b22] border-t border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-3 shadow-lg"
       >
         <div className="flex gap-1">
-          <label className="cursor-pointer p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <label className="p-2 transition-colors rounded-full cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
             <input
               type="file"
               ref={fileInputRef}
@@ -348,7 +350,7 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
             />
             <IoImage className="text-xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6]" />
           </label>
-          <label className="cursor-pointer p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <label className="p-2 transition-colors rounded-full cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
             <input
               type="file"
               hidden
@@ -383,13 +385,13 @@ Nếu có người hỏi cách tiếp cận Thân Thương, trả lời rằng T
                 {isListening ? <FaStop /> : <FaMicrophone />}
               </button>
               {speechError && (
-                <div className="absolute -top-8 right-0 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 text-xs px-2 py-1 rounded">
+                <div className="absolute right-0 px-2 py-1 text-xs text-red-800 bg-red-100 rounded -top-8 dark:bg-red-900 dark:text-red-100">
                   {speechError}
                 </div>
               )}
             </>
           ) : (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs">
+            <div className="absolute text-xs text-gray-400 transform -translate-y-1/2 right-3 top-1/2">
               Không hỗ trợ
             </div>
           )}
