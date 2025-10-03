@@ -6,12 +6,28 @@ import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
 import ActivitySection from "../components/ActivitySection";
 import ProductSection from "../components/ProductSection";
+import ParticleSystem from "../components/ParticleSystem";
+import SoundSystem from "../components/SoundSystem";
+import EasterEggSystem from "../components/EasterEggSystem";
+import MobileTouchSystem from "../components/MobileTouchSystem";
+import MobileEasterEggs from "../components/MobileEasterEggs";
 
 const Home = ({ darkMode, toggleTheme }) => {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white transition-colors duration-300 font-sans overflow-x-hidden">
-      <Header darkMode={darkMode} toggleTheme={toggleTheme} />
-      <div className="mt-24">
+    <MobileTouchSystem>
+      <div className="min-h-screen bg-gray-100 dark:bg-[#0d1117] text-black dark:text-white transition-colors duration-300 font-sans overflow-x-hidden relative">
+        {/* Particle System Background */}
+        <ParticleSystem theme={darkMode ? 'dark' : 'light'} />
+        
+        {/* Sound System */}
+        <SoundSystem darkMode={darkMode} />
+        
+        {/* Easter Egg Systems */}
+        <EasterEggSystem />
+        <MobileEasterEggs />
+        
+        <Header darkMode={darkMode} toggleTheme={toggleTheme} />
+      <div className="mt-24 relative z-10">
         <HeroSection />
         <AboutSection />
         <ActivitySection />
@@ -27,6 +43,7 @@ const Home = ({ darkMode, toggleTheme }) => {
       <Footer />
   
     </div>
+    </MobileTouchSystem>
   );
 };
 

@@ -9,13 +9,10 @@ import {
   FaInfoCircle,
 } from "react-icons/fa";
 import { RiAccountPinBoxFill } from "react-icons/ri";
-import { useTheme } from "../context/ThemeContext"; // 👈 thêm dòng này
 
-const Header = () => {
+const Header = ({ darkMode, toggleTheme }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [time, setTime] = useState(new Date());
-
-  const { darkMode, toggleTheme } = useTheme(); // 👈 lấy từ context
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 

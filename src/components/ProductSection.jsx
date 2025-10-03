@@ -334,9 +334,8 @@ const ProductSection = () => {
           {products.map((product) => (
             <motion.div
               key={product.id}
-              variants={itemVariants}
-              whileHover="hover"
               variants={cardHoverVariants}
+              whileHover="hover"
               className="relative bg-white dark:bg-[#0d1117] rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-300 group cursor-pointer"
               onClick={() => openModal(product)}
             >

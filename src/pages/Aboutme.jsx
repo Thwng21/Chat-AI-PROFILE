@@ -101,7 +101,7 @@ const Aboutme = ({ darkMode, toggleTheme }) => {
                 <div className="ml-4">
                   <h4 className="font-semibold">Email</h4>
                   <a href="mailto:thanthuong21504@gmail.com" className="text-gray-600 dark:text-gray-400 hover:underline">
-                    thanthuong21504@gmail.com
+                    thuong215204@gmail.com
                   </a>
                 </div>
               </div>
@@ -112,20 +112,20 @@ const Aboutme = ({ darkMode, toggleTheme }) => {
                 </div>
                 <div className="ml-4">
                   <h4 className="font-semibold">Điện thoại</h4>
-                  <p className="text-gray-600 dark:text-gray-400">(+84) 123 456 789</p>
+                  <p className="text-gray-600 dark:text-gray-400">(+84) #########</p>
                 </div>
               </div>
 
               <div className="pt-4">
                 <h4 className="font-semibold mb-3">Liên kết mạng xã hội</h4>
                 <div className="flex space-x-4">
-                  <a href="https://github.com/thanthuong" target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6] dark:hover:text-[#00f5d4] transition">
+                  <a href="https://github.com/Thwng21" target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6] dark:hover:text-[#00f5d4] transition">
                     <FaGithub />
                   </a>
-                  <a href="https://linkedin.com/in/thanthuong" target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6] dark:hover:text-[#00f5d4] transition">
+                  <a href="/" target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6] dark:hover:text-[#00f5d4] transition">
                     <FaLinkedin />
                   </a>
-                  <a href="https://facebook.com/thanthuong" target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6] dark:hover:text-[#00f5d4] transition">
+                  <a href="https://www.facebook.com/pham.huu.than.thuong" target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-600 dark:text-gray-400 hover:text-[#2de2e6] dark:hover:text-[#00f5d4] transition">
                     <FaFacebook />
                   </a>
                 </div>
